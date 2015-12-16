@@ -26,6 +26,18 @@ class NetworkAddress(object):
     def __contains__(self, ip):
         ip2net = inet_aton(ip) & self.mask_int
         return ip2net == self.network_address
+        
+    def network_split(self, mask):
+        if self.mask > mask:
+            return inet_ntoa(self.network_address)
+
+        ret = list()
+        for i in xrange(0, (1 << (mask - self.mask))):
+            sub = i << (32 - mask)
+            network_addr = self.network_address | sub
+            ret.append(inet_ntoa(network_addr))
+
+        return ret
 
 if __name__ == '__main__':
     net = NetworkAddress("192.168.1.129/26")
